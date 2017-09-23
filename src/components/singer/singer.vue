@@ -57,15 +57,21 @@ const hotLen = 10
         //歌手数据排序 (a-z)
         let hot = []
         let all = []
-        hot = map.hot
+        hot.push(map.hot)
+
         for(var i in map){
           if(map[i].title !== '热门' && map[i].title !== '9'){
             all.push(map[i])
           }
         }
         
-        
+        all.sort((a,b) =>{
+          return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+        })
 
+        let singerArr = hot.concat(all)
+
+        return singerArr
     }
    }
  })
