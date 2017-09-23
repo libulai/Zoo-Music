@@ -6,7 +6,7 @@ import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 
 
-import 'common/stylus/index.styl'
+import 'common/less/index.less'
 
 /* eslint-disable no-unused-vars */
 // import vConsole from 'vconsole'

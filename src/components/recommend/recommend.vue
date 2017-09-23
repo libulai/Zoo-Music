@@ -1,11 +1,71 @@
 <template>
   <div class="recommend">
-    
+    <div class="recommend-content">
+      <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
+        <slider>
+          <div v-for="item in recommends">
+            <a :href="item.linkUrl">
+              <img class="needsclick" :src="item.picUrl">
+            </a>
+          </div>
+        </slider>
+      </div>
+      <div class="recommend-list">
+        <h1 class="list-title">热门歌单推荐</h1>
+        <ul>
+          <li class="item" v-for="item in dislist" @click="selectItem(item)">
+            <div class="icon">
+              <img width="60" height="60" :src="item.imgurl">
+            </div>
+            <div class="text">
+              <h2 class="name" v-html='item.creator.name'></h2>
+              <p class="desc" v-html="item.dissname"></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
-<script type="text/ecmascript-6">
-  
+<script>
+  import {getRecommend,getDislist} from 'api/recommend'
+  import slider from 'base/slider'
+
+  export default {
+    created() {
+      this._getRecommend()
+      this._getDislist()
+    },
+    data(){
+      return {
+        recommends :[],
+        dislist :[]
+      }
+    },
+    methods:{
+      _getRecommend(){
+        getRecommend().then((res) => {
+          if(res.code === 0){
+            this.recommends = res.data.slider
+          }
+        })
+      },
+      _getDislist(){
+        getDislist().then((res) =>{
+          if(res.code === 0){
+            this.dislist = res.data.list
+          }
+        })
+      },
+      selectItem(item){
+
+      }
+    },
+    components:{
+      slider
+    }
+  }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
