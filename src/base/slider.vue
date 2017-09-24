@@ -57,6 +57,7 @@
       clearTimeout(this.timer)
     },
     methods:{
+      //设置容器宽度
       _setSliderWidth(isResize){
         this.children = this.$refs.sliderGroup.children
 
@@ -79,8 +80,8 @@
       _initDots(){
         this.dots = new Array(this.children.length)
       },
+      //初始化轮播图
       _initSlider() {
-        //初始化轮播图
         this.slider = new BScroll(this.$refs.slider, {
           scrollX: true,
           scrollY: false,
