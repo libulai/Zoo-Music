@@ -1,36 +1,43 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
-        <slider>
-          <div v-for="item in recommends">
-            <a :href="item.linkUrl">
-              <img class="needsclick" :src="item.picUrl">
-            </a>
-          </div>
-        </slider>
-      </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul>
-          <li class="item" v-for="item in dislist" @click="selectItem(item)">
-            <div class="icon">
-              <img width="60" height="60" :src="item.imgurl">
+    <scroll ref="scroll" class="recommend-content" :data="dislist">
+      <div>
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
+          <slider>
+            <div v-for="item in recommends">
+              <a :href="item.linkUrl">
+                <img class="needsclick" :src="item.picUrl" @load="imgLoad">
+              </a>
             </div>
-            <div class="text">
-              <h2 class="name" v-html='item.creator.name'></h2>
-              <p class="desc" v-html="item.dissname"></p>
-            </div>
-          </li>
-        </ul>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li class="item" v-for="item in dislist" @click="selectItem(item)">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.imgurl">
+              </div>
+              <div class="text">
+                <h2 class="name" v-html='item.creator.name'></h2>
+                <p class="desc" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+      <div class="loading-container" v-show="!dislist.length">
+        <loading></loading>
+      </div>
+    </scroll>
   </div>
 </template>
 
 <script>
   import {getRecommend,getDislist} from 'api/recommend'
   import slider from 'base/slider'
+  import scroll from 'base/scroll'
+  import loading from 'base/loading'
 
   export default {
     created() {
@@ -59,11 +66,20 @@
         })
       },
       selectItem(item){
-
+        console.log(item)
+        // location.href = item
+      },
+      imgLoad(){
+        if(!this.checkloaded){
+          this.$refs.scroll.refresh()
+          this.checkloaded = true
+        }  
       }
     },
     components:{
-      slider
+      slider,
+      scroll,
+      loading
     }
   }
 </script>

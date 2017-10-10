@@ -1,12 +1,13 @@
 <template>
   <div class="singer">
-  
+    <listview :data="singers"></listview>
   </div>
 </template>
 
 <script>
 import {getSingerList} from 'api/singer'
 import singer from 'common/js/singer'
+import listview from 'base/listview'
 
 const hotName = '热门'
 const hotLen = 10
@@ -20,12 +21,14 @@ const hotLen = 10
    created(){
     this._getSingerList()
    },
+   components:{
+    listview
+   },
    methods:{
     _getSingerList(){
       getSingerList().then((res) =>{
         if (res.code === 0) {
-            this.singers = res.data.list
-            console.log(this._normalizeSinger(res.data.list))
+            this.singers = this._normalizeSinger(res.data.list)
           }
       })
     },
