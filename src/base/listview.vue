@@ -4,7 +4,7 @@
             <li v-for="item in data" class="list-group" ref="group">
                 <h2 class="list-group-title">{{item.title}}</h2>
                 <ul>
-                    <li v-for="group in item.items" class="list-group-item">
+                    <li v-for="group in item.items" class="list-group-item" @click="select(group)">
                         <img class="avatar" v-lazy="group.url" alt="">
                         <span class="name">{{group.name}}</span>
                     </li>
@@ -21,6 +21,9 @@
                 </li>
             </ul>
         </div>
+        <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+            <h1 class="fixed-title">{{fixedTitle}}</h1>
+        </div>
     </scroll>
 </template>
 
@@ -29,7 +32,7 @@
   import loading from 'base/loading'
   import {getData} from 'common/js/dom'
 
-  const TITLE_HEIGHT = 30
+  const TITLE_HEIGHT = 30 
   const ANCHOR_HEIGHT = 18 
 
   export default {
@@ -66,10 +69,16 @@
             let anchorIndex = parseInt(this.touch.anchorIndex) + height
             this._toScroll(anchorIndex)
         },
+        //歌手详情路由跳转
+        select(data){
+            this.$emit('select',data.id)
+        },
         scrollPos(pos){
             this.scrollY = pos.y
         },
+        //右侧操作后左侧位移
         _toScroll(index){
+            // this.scrollY = -this.listHeight[index]
             this.$refs.listview.scrollToElement(this.$refs.group[index],[])
         },
         _calculateHeight(){
@@ -81,12 +90,16 @@
                 let listArea = list[i]
                 height += listArea.clientHeight
                 this.listHeight.push(height)
-                // console.log(this.listHeight)
             }
         }
     },
     computed:{
-    
+        fixedTitle(){
+            if(this.scrollY >= 0 || this.scrollY === -1){
+                return null
+            }
+            return this.data[this.currentIndex].title
+        }
     },
     data(){
         return{
@@ -100,12 +113,18 @@
                 this._calculateHeight()
             }, 20)
         },
+        //左右联动 => 字母高亮   &&   标题栏顶出效果
         scrollY(){
-            // console.log(this.scrollY)
             let scrollY = -this.scrollY
             let listHeight = this.listHeight
             for(var i=0;i<listHeight.length;i++){
-                if(scrollY<listHeight[i+1] && scrollY>listHeight[i]){
+                if(scrollY<=listHeight[i+1] && scrollY>=listHeight[i]){
+                    if(listHeight[i+1]-TITLE_HEIGHT < scrollY){
+                        let fixedTop = TITLE_HEIGHT - (listHeight[i+1] - scrollY) //位移距离
+                        this.$refs.fixed.style.transform = `translate3d(0,-${fixedTop}px,0)`
+                    }else{
+                        this.$refs.fixed.style.transform = `translate3d(0,0,0)`
+                    }
                     this.currentIndex = i
                 }
             }
@@ -166,7 +185,7 @@
           color: $color-theme
     .list-fixed
       position: absolute
-      top: 0
+      top: -2px
       left: 0
       width: 100%
       .fixed-title

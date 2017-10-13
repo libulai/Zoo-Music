@@ -27,6 +27,10 @@
         }
       },
       mounted(){
+        // this.$nextTick(() => {
+        //   this.initScroll()
+        // })
+        //方法等同
         setTimeout(() =>{
             this.initScroll()
         },20)

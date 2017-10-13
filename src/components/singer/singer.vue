@@ -1,6 +1,7 @@
 <template>
   <div class="singer">
-    <listview :data="singers"></listview>
+    <listview :data="singers" @select="routerTo"></listview>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -25,6 +26,10 @@ const hotLen = 10
     listview
    },
    methods:{
+     //跳转歌手详情
+     routerTo(id){
+        this.$router.push({path:`/singer/${id}`})
+     },
     _getSingerList(){
       getSingerList().then((res) =>{
         if (res.code === 0) {
