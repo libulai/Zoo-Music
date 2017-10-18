@@ -1,15 +1,59 @@
 <template>
     <div class="music-list">
+      <div class="back">
+        <i class="icon-back"></i>
+      </div>
+      <h1 class="title" v-html="title"></h1>
+      <div class="bg-image" ref="bgImage" :style="bg">
+        <div class="play-wrapper">
+          <div ref="playBtn" class="play">
+            <i class="icon-play"></i>
+            <span class="text">随机播放全部</span>
+          </div>
+        </div>
+        <div class="filter" ref="filter"></div>
+        <div class="bg-layer" ref="layer"></div>
+        <scroll :data="singer" ref="list" class="list">
+          <div class="song-list-wrapper">
+            <song-list :singer="singer"></song-list>
+          </div>
+        </scroll>
+      </div>
     </div>
 </template>
 
 <script>
     import Scroll from 'base/scroll'
+    import SongList from 'base/song-list'
 
-    export default{
-        components:{
-            Scroll
+    export default {
+      props:{
+        singer:{
+          type:Array,
+          default:[]
+        },
+        title:{
+          type:String,
+          default:''
+        },
+        bgImg:{
+          type:String,
+          default:''
         }
+      },
+      components:{
+          Scroll,
+          SongList
+      },
+      mounted(){
+        //scroll 初始化高度
+        this.$refs.list.$el.style.top = this.$refs.bgImage.clientHeight + 'px'
+      },
+      computed:{
+        bg(){
+          return `background-image:url(${this.bgImg})`
+        }
+      }
     }
 </script>
 

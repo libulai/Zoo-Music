@@ -9,6 +9,7 @@
 import {getSingerList} from 'api/singer'
 import singer from 'common/js/singer'
 import listview from 'base/listview'
+import {mapMutations} from 'vuex'
 
 const hotName = '热门'
 const hotLen = 10
@@ -27,8 +28,9 @@ const hotLen = 10
    },
    methods:{
      //跳转歌手详情
-     routerTo(id){
-        this.$router.push({path:`/singer/${id}`})
+     routerTo(data){
+        this.$router.push({path:`/singer/${data.id}`})
+        this.setSinger(data)
      },
     _getSingerList(){
       getSingerList().then((res) =>{
@@ -80,7 +82,10 @@ const hotLen = 10
         let singerArr = hot.concat(all)
 
         return singerArr
-    }
+    },
+    ...mapMutations({
+      setSinger : 'SET_SINGER'
+    })
    }
  })
 </script>

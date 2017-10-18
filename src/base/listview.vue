@@ -71,7 +71,7 @@
         },
         //歌手详情路由跳转
         select(data){
-            this.$emit('select',data.id)
+            this.$emit('select',data)
         },
         scrollPos(pos){
             this.scrollY = pos.y
