@@ -1,7 +1,7 @@
 <template>
     <div class="music-list">
       <div class="back">
-        <i class="icon-back"></i>
+        <i class="icon-back" @click="back"></i>
       </div>
       <h1 class="title" v-html="title"></h1>
       <div class="bg-image" ref="bgImage" :style="bg">
@@ -11,20 +11,28 @@
             <span class="text">随机播放全部</span>
           </div>
         </div>
-        <div class="filter" ref="filter"></div>
+          <div class="filter" ref="filter"></div>
+        </div>
         <div class="bg-layer" ref="layer"></div>
-        <scroll :data="singer" ref="list" class="list">
+        <scroll :data="singer" :probeType="probeType" :listenScroll="listenScroll" @scroll="scroll" ref="list" class="list">
           <div class="song-list-wrapper">
             <song-list :singer="singer"></song-list>
           </div>
+          <div v-show="!singer.length" class="loading-container">
+            <loading></loading>
+          </div>
         </scroll>
-      </div>
     </div>
 </template>
 
 <script>
     import Scroll from 'base/scroll'
     import SongList from 'base/song-list'
+    import Loading from 'base/loading'
+    import {prefixStyle} from 'common/js/dom'
+
+    const reHeight = 40
+    const transform = prefixStyle('transform')
 
     export default {
       props:{
@@ -43,15 +51,63 @@
       },
       components:{
           Scroll,
-          SongList
+          SongList,
+          Loading
+      },
+      data(){
+        return {
+          scrollY:0
+        }
       },
       mounted(){
         //scroll 初始化高度
+        this.bgH = this.$refs.bgImage.clientHeight - reHeight
         this.$refs.list.$el.style.top = this.$refs.bgImage.clientHeight + 'px'
+      },
+      created(){
+        this.probeType = 3
+        this.listenScroll = true
       },
       computed:{
         bg(){
           return `background-image:url(${this.bgImg})`
+        }
+      },
+      watch:{
+        //滑动效果
+        scrollY(newY){
+          let translateY = Math.max(-this.bgH,newY)  //取最大的值
+          this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
+          console.log(transform)
+          //滚动到顶部
+          if(translateY == -this.bgH){
+            this.$refs.bgImage.style.zIndex = 1
+            this.$refs.bgImage.style.paddingTop = `10%`
+            this.$refs.playBtn.style.display = 'none'
+          }else{
+            this.$refs.bgImage.style.zIndex = 0
+            this.$refs.bgImage.style.paddingTop = `70%`
+            this.$refs.playBtn.style.display = 'block'
+          }
+
+          //往下拉图片放大效果
+          let initScale = 1
+          let preScale = initScale + Math.abs(newY/this.bgH)
+        
+          if(newY > 0){
+            this.$refs.bgImage.style[transform] = `scale(${preScale})`
+            this.$refs.bgImage.style.zIndex = `20`
+          }else{
+            this.$refs.bgImage.style[transform] = `scale(${initScale})`
+          }
+        }
+      },
+      methods:{
+        back(){
+          this.$router.back(-1)
+        },
+        scroll(data){
+          this.scrollY = data.y
         }
       }
     }
